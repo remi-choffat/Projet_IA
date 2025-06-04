@@ -1,13 +1,7 @@
-import java.awt.Color;
-import java.awt.Image;
-import java.awt.Point;
-import java.awt.geom.Point2D;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.imageio.ImageIO;
 
 /**
@@ -38,6 +32,11 @@ public class IdentifierBiome {
             }
         }
 
+        // si aucun point n'est trouvé, retourner l'image d'origine
+        if (points.isEmpty()) {
+            return img;
+        }
+
         int[] clusters = algo.cluster(points.toArray(new Point[0]), ncluster);
 
         BufferedImage nimg = AffichageBiome.eclaircirImage(img, 0.75);
@@ -46,33 +45,51 @@ public class IdentifierBiome {
             var p = points.get(i);
             nimg.setRGB(p.x, p.y, couleurs_clusters[clusters[i]].getRGB());
         }
+
+        // ajouter le nom du biome sur l'image
+        Graphics2D g2d = nimg.createGraphics();
+        g2d.setColor(Color.BLACK);
+        g2d.setFont(new Font("Arial", Font.BOLD, 32));
+        g2d.drawString(palette.getNomCouleur(biome), 20, 40);
+        g2d.dispose();
+
         return nimg;
     }
 
 
     public static void main(String[] args) throws Exception {
-        BufferedImage img = ImageIO.read(new File(args[0]));
+        BufferedImage img = ImageIO.read(new File("cartes/Planete 1.jpg"));
 
-        BufferedImage nimg = identifier(img, Palette.SAVANE, new Palette(NormeCouleur.CIELAB), new AlgoClustering() {
-            @Override
-            public int[] cluster(Point[] points, int ncluster) {
-                int[] r = new int[points.length];
+        // Définir la liste des biomes à traiter
+        Color[] biomes = new Color[]{
+                Palette.SAVANE,
+                Palette.EAU_PEU_PROFONDE,
+                Palette.FORET_TROPICALE,
+                Palette.EAU_PROFONDE,
+                Palette.GLACIER,
+                Palette.DESERT
+        };
 
-                int midx = img.getWidth() / 2;
-                int midy = img.getHeight() / 2;
+        // Définir les couleurs pour les écosystèmes
+        Color[] ecosystemColors = new Color[]{
+                Color.RED,
+                Color.BLUE,
+                Color.GREEN,
+                Color.YELLOW,
+                Color.MAGENTA,
+                Color.CYAN
+        };
 
-                for (int i = 0; i < points.length; i++) {
-                    Point p = points[i];
+        Palette palette = new Palette(NormeCouleur.CIELAB);
+        AlgoClustering algo = new KMeansClustering();
 
-                    r[i] = p.x < midx ? p.y < midy ? 0 : 1 : p.y < midy ? 2 : 3;
+        // Pour chaque biome, créer une image avec les écosystèmes mis en évidence
+        for (int i = 0; i < biomes.length; i++) {
+            Color biome = biomes[i];
+            BufferedImage nimg = identifier(img, biome, palette, algo, 3, ecosystemColors); // 3 clusters par biome
+            ImageIO.write(nimg, "png", new File("cartes/cartes_modifiees/Planete_1_" + palette.getNomCouleur(biome) + "_ecosystems.png"));
+        }
 
-                }
-                return r;
-            }
-        }, 4, new Color[]{
-                Color.red, Color.blue, Color.gray, Color.magenta
-        });
-
-        ImageIO.write(nimg, "png", new File("cartes/cartes_modifiees/Planete 1_clusters.jpg"));
+        System.out.println("Les écosystèmes ont été mis en évidence et sauvegardés !");
     }
 }
