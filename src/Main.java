@@ -23,14 +23,18 @@ public class Main {
             // sauvegarde de l'image floutée
             ImageIO.write(blurredImage, "jpg", new File("cartes/cartes_modifiees/Planete 1_avecBlur.jpg"));
 
-            // Définir les biomes
+            // Définir les biomes (tous les biomes de Palette)
             Color[] biomes = new Color[]{
-                    Palette.SAVANE,
-                    Palette.EAU_PEU_PROFONDE,
+                    Palette.TUNDRA,
+                    Palette.TAIGA,
+                    Palette.FORET_TEMPEREE,
                     Palette.FORET_TROPICALE,
-                    Palette.EAU_PROFONDE,
+                    Palette.SAVANE,
+                    Palette.PRAIRIE,
+                    Palette.DESERT,
                     Palette.GLACIER,
-                    Palette.DESERT
+                    Palette.EAU_PEU_PROFONDE,
+                    Palette.EAU_PROFONDE
             };
 
             Palette palette = new Palette(NormeCouleur.REDMEANS);

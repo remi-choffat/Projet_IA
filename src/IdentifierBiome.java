@@ -60,14 +60,18 @@ public class IdentifierBiome {
     public static void main(String[] args) throws Exception {
         BufferedImage img = ImageIO.read(new File("cartes/Planete 1.jpg"));
 
-        // Définir la liste des biomes à traiter
+        // Définir la liste des biomes à traite (tous les biomes de Palette)
         Color[] biomes = new Color[]{
-                Palette.SAVANE,
-                Palette.EAU_PEU_PROFONDE,
+                Palette.TUNDRA,
+                Palette.TAIGA,
+                Palette.FORET_TEMPEREE,
                 Palette.FORET_TROPICALE,
-                Palette.EAU_PROFONDE,
+                Palette.SAVANE,
+                Palette.PRAIRIE,
+                Palette.DESERT,
                 Palette.GLACIER,
-                Palette.DESERT
+                Palette.EAU_PEU_PROFONDE,
+                Palette.EAU_PROFONDE
         };
 
         // Définir les couleurs pour les écosystèmes
