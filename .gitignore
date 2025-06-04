@@ -31,3 +31,7 @@ bin/
 
 *.xml
 *.iml
+*.class
+*.log
+*.jar
+*.war
