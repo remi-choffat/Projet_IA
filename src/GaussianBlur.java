@@ -57,14 +57,13 @@ public class GaussianBlur implements Blur{
 		// On parcourt chaque pixel de la nouvelle image
 		for(int y = 0; y < img.getHeight(); y++){
 			for(int x = 0; x < img.getWidth(); x++){
-				// System.out.println("x : " + x + " y : " + y);
 				int d = divide;
-				// Pour chaque pixel correspondant à l'ancienne image, on calcule la moyenne du nouvel pixel
 				int[] somme = {0, 0, 0};
 				int middle = filtre.length/2;
+
+				// Calcul de la couleur en fonction des voisins et de la matrice
 				for (int yf = 0; yf < filtre.length; yf++) {
 					for (int xf = 0; xf < filtre.length; xf++) {
-						// System.out.println("ok");
 						if(y + yf - middle >= 0 && x + xf - middle >= 0 && y + yf < img.getHeight() && x + xf < img.getWidth()){
 							int[] coord = {x+xf - middle, y+yf - middle};
 							Color c = new Color(img.getRGB(coord[0], coord[1]));
@@ -76,6 +75,8 @@ public class GaussianBlur implements Blur{
 						}
 					}
 				}
+
+				// Appliquer nouvelle couleur
 				int[] moy = {somme[0]/divide, somme[1]/divide, somme[2]/divide};
 				Color rgb = new Color(moy[0], moy[1], moy[2]);
 				new_img.setRGB(x, y, rgb.getRGB());
