@@ -5,8 +5,11 @@ import java.awt.Color;
  */
 public class Utils {
 
-	public static int[] rgb2lab(Color c) {return rgb2lab(c.getRed(), c.getGreen(), c.getBlue()); }
-	public static int[] rgb2lab(int R, int G, int B) {
+    public static int[] rgb2lab(Color c) {
+        return rgb2lab(c.getRed(), c.getGreen(), c.getBlue());
+    }
+
+    public static int[] rgb2lab(int R, int G, int B) {
         // http://www.brucelindbloom.com
 
         float r, g, b, X, Y, Z, fx, fy, fz, xr, yr, zr;
