@@ -77,4 +77,25 @@ public class Palette {
         }
         return couleurs[closestColorIndex];
     }
+
+
+    /**
+     * Renvoie le nom de la couleur correspondant à une couleur donnée
+     *
+     * @param c la couleur à identifier
+     * @return le nom de la couleur
+     */
+    public String getNomCouleur(Color c) {
+        if (TUNDRA.equals(c)) return "Tundr";
+        if (TAIGA.equals(c)) return "Taïga";
+        if (FORET_TEMPEREE.equals(c)) return "Forêt tempérée";
+        if (FORET_TROPICALE.equals(c)) return "Forêt tropicale";
+        if (SAVANE.equals(c)) return "Savane";
+        if (PRAIRIE.equals(c)) return "Prairie";
+        if (DESERT.equals(c)) return "Désert";
+        if (GLACIER.equals(c)) return "Glacier";
+        if (EAU_PEU_PROFONDE.equals(c)) return "Eau peu profonde";
+        if (EAU_PROFONDE.equals(c)) return "Eau profonde";
+        return "Biome inconnu";
+    }
 }
