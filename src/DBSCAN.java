@@ -6,17 +6,14 @@ import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 
-import com.sun.tools.javac.util.ArrayUtils;
-
-
 /**
  * DBSCANv2
  */
 public class DBSCAN {
 
-	final int NOISE = -1;
+	private static final int NOISE = -1;
 
-	public int[] removeEleme(int[] T, int ind) {
+	private static int[] removeEleme(int[] T, int ind) {
 		int[] r = new int[T.length-1];
 		int j = 0;
 		for (int i = 0; i < T.length; i++) {
@@ -29,7 +26,7 @@ public class DBSCAN {
 		return r;
 	}
 
-	public int[] concat(int[] A1, int[] A2) {
+	private static int[] concat(int[] A1, int[] A2) {
 		int[] r = new int[A1.length + A2.length];
 
 		int i =0;
@@ -42,13 +39,8 @@ public class DBSCAN {
 		return r;
 	}
 
-
-
-
-	
-	double dist(Point x1, Point x2) {
-
-		return Math.sqrt(Math.pow((x1.x - x2.x), 2) + Math.pow((x1.y - x2.y), 2));
+	private static double dist(Point x1, Point x2) {
+		return x1.distance(x2);
 	}
 
 
@@ -59,7 +51,7 @@ public class DBSCAN {
 	 *
 	 * @return int[] de meme taille que DB, ou -1 est un point bruit ou sinon [1..] le numero de cluster
 	*/
-	public int[] DBSCAN(Point[] DB, double eps, int minPts) {
+	public static int[] _DBSCAN(Point[] DB, double eps, int minPts) {
 		int C = 0;
 
 		boolean[] traite = new boolean[DB.length];
@@ -111,7 +103,7 @@ public class DBSCAN {
 		return states;
 	}
 
-	public int[] rangeQuery(Point[] DB, int Q, double eps) {
+	private static int[] rangeQuery(Point[] DB, int Q, double eps) {
 		ArrayList<Integer> N = new ArrayList<>();
 
 		for (int i = 0; i < DB.length; i++) {
@@ -125,7 +117,8 @@ public class DBSCAN {
 	}
 
 
-	public static void main(String[] args) {
+	// exemple d'utilisation'
+	public static void main(String[] args) throws Exception {
 		
 		BufferedImage img = ImageIO.read(new File(args[0]));
 
@@ -134,10 +127,22 @@ public class DBSCAN {
 		BufferedImage nimg = IdentifierBiome.identifier(img, Palette.PRAIRIE, new Palette(NormeCouleur.CIELAB), new AlgoClustering() {
 			@Override
 			public int[] cluster(Point[] points, int ncluster) {
-				return 
+				double eps = 5;
+				int minPts = 5;
+				int[] r = DBSCAN._DBSCAN(points, eps, minPts);
+
+				// on remplace les bruits
+				for (int i = 0; i < r.length; i++) {
+					if (r[i] == NOISE) {
+						r[i] = 0;
+					}
+					
+				}
+
+				return r;
 
 			}
-		}, 4, new Color[]{
+		}, 4, new Color[]{ // la premier couleur represente les point sans clusters
 			Color.red, Color.blue, Color.gray, Color.magenta
 		});
 
