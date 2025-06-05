@@ -11,7 +11,7 @@ import javax.imageio.ImageIO;
  */
 public class DBSCAN {
 
-	private static final int NOISE = -1;
+	public static final int NOISE = -1;
 
 	private static int[] removeEleme(int[] T, int ind) {
 		int[] r = new int[T.length-1];
@@ -28,7 +28,6 @@ public class DBSCAN {
 
 	private static int[] concat(int[] A1, int[] A2) {
 		int[] r = new int[A1.length + A2.length];
-
 		int i =0;
 		for (; i < A1.length; i++) {
 			r[i] = A1[i];
@@ -53,9 +52,7 @@ public class DBSCAN {
 	*/
 	public static int[] _DBSCAN(Point[] DB, double eps, int minPts) {
 		int C = 0;
-
 		boolean[] traite = new boolean[DB.length];
-
 		int[] states = new int[DB.length];
 
 		for (int i = 0; i < DB.length; i++) {
@@ -74,7 +71,6 @@ public class DBSCAN {
 
 			int[] S = removeEleme(N, i);
 
-
 			for (int j = 0; j < S.length; j++) {
 				Point Q = DB[j];
 
@@ -91,11 +87,6 @@ public class DBSCAN {
 					S = concat(S, NN);
 				}
 			}
-			
-
-
-
-			
 		}
 
 
@@ -121,9 +112,6 @@ public class DBSCAN {
 	public static void main(String[] args) throws Exception {
 		
 		BufferedImage img = ImageIO.read(new File(args[0]));
-
-
-
 		BufferedImage nimg = IdentifierBiome.identifier(img, Palette.PRAIRIE, new Palette(NormeCouleur.CIELAB), new AlgoClustering() {
 			@Override
 			public int[] cluster(Point[] points, int ncluster) {
