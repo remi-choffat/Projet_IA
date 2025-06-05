@@ -2,6 +2,7 @@ package algos;
 
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 
 /**
@@ -10,6 +11,7 @@ import java.util.ArrayList;
 public class DBSCAN {
 
     public static final int NOISE = -1;
+    public static final int UNVISITED = -2;
 
 
     private static int[] removeElement(int[] T, int ind) {
@@ -51,9 +53,10 @@ public class DBSCAN {
     public static int[] _DBSCAN(Point[] DB, double eps, int minPts) {
         int C = 0;
         int[] states = new int[DB.length];
+		Arrays.fill(states, UNVISITED);
 
         for (int i = 0; i < DB.length; i++) {
-            if (states[i] != 0) continue;
+            if (states[i] != UNVISITED) continue;
 
             int[] N = rangeQuery(DB, i, eps);
 
@@ -68,16 +71,17 @@ public class DBSCAN {
             int[] S = removeElement(N, i);
 
             for (int j = 0; j < S.length; j++) {
+				int idx = S[j];
 
-                if (states[j] == NOISE) {
-                    states[j] = C;
+                if (states[idx] == NOISE) {
+                    states[idx] = C;
                 }
-                if (states[j] != 0) {
+                if (states[idx] != UNVISITED) {
                     continue;
                 }
-                states[j] = C;
+                states[idx] = C;
 
-                int[] NN = rangeQuery(DB, j, eps);
+                int[] NN = rangeQuery(DB, idx, eps);
                 if (NN.length >= minPts) {
                     S = concat(S, NN);
                 }

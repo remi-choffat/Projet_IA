@@ -29,7 +29,7 @@ public class DBScanClustering implements AlgoClustering {
         int[] r = DBSCAN._DBSCAN(points, eps, minpts);
 
         for (int i = 0; i < r.length; i++) {
-            if (r[i] == DBSCAN.NOISE) {
+            if (r[i] < 0) {
                 r[i] = 0;
             }
 
