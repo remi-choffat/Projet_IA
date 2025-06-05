@@ -1,3 +1,8 @@
+import algos.AlgoClustering;
+import algos.DBScanClustering;
+import algos.HCAClustering;
+import algos.KMeansClustering;
+
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -18,7 +23,7 @@ public class Main {
 
         try {
             if (args.length < 4) {
-                System.err.println("Usage: java Main <image_path> <output_directory> <number_of_clusters> <algorithm>");
+                System.err.println("Usage: java Main <image_path> <output_directory> <number_of_clusters> <algorithm> [<eps> <minPts>]");
                 // Exemple java Main "cartes/Planete 1.jpg" "cartes/cartes_modifiees" 4 KMeans
                 return;
             }
@@ -33,6 +38,17 @@ public class Main {
                 case "kmeans":
                     algo = new KMeansClustering();
                     break;
+                case "dbscan":
+                    double eps = 5.0; // Valeur par défaut pour eps
+                    int minPts = 4; // Valeur par défaut pour minPts
+                    if (args.length >= 5) {
+                        eps = Double.parseDouble(args[4]);
+                    }
+                    if (args.length >= 6) {
+                        minPts = Integer.parseInt(args[5]);
+                    }
+                    algo = new DBScanClustering(eps, minPts);
+                    break;
                 case "hca_single":
                     algo = new HCAClustering(HCAClustering.SINGLE_LINKAGE);
                     break;
@@ -41,7 +57,7 @@ public class Main {
                     break;
                 default:
                     System.err.println("Algorithme inconnu : " + args[3]);
-                    System.err.println("Utilisez 'KMeans', 'HCA_Single' ou 'HCA_Centroid'.");
+                    System.err.println("Utilisez 'KMeans', 'DBScan', 'HCA_Single' ou 'HCA_Centroid'.");
                     return;
             }
 
@@ -101,8 +117,8 @@ public class Main {
                 int percent = (int) ((i + 1) * 100.0 / biomes.length);
                 System.out.print("\rGénération des images d'écosystèmes (" + percent + " %)...");
                 BufferedImage nimg = IdentifierBiome.identifier(blurredImage, biome, palette, algo, numberOfClusters, ecosystemColors);
-                ImageIO.write(nimg, extension, new File(outputDir, imageName + "_" + palette.getNomCouleur(biome) + "_ecosystemes." + extension));
             }
+            ImageIO.write(nimg, extension, new File(outputDir, imageName + "_" + palette.getNomCouleur(biome) + "_ecosystemes_" + numberOfClusters + "_" + args[3] + "." + extension));
 
             System.out.println("\nTraitement terminé avec succès ! Vos images sont enregistrées dans le répertoire : " + outputDir.getAbsolutePath());
 
