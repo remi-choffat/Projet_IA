@@ -86,7 +86,7 @@ public class Palette {
      * @return le nom de la couleur
      */
     public String getNomCouleur(Color c) {
-        if (TUNDRA.equals(c)) return "Tundr";
+        if (TUNDRA.equals(c)) return "Tundra";
         if (TAIGA.equals(c)) return "Taïga";
         if (FORET_TEMPEREE.equals(c)) return "Forêt tempérée";
         if (FORET_TROPICALE.equals(c)) return "Forêt tropicale";

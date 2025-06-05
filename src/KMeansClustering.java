@@ -12,19 +12,20 @@ public class KMeansClustering implements AlgoClustering {
     /**
      * Implémentation de l'algorithme K-Means pour le clustering.
      *
-     * @param points    les points à regrouper
-     * @param ncluster  le nombre de clusters souhaité
+     * @param points   les points à regrouper
+     * @param ncluster le nombre de clusters souhaité
      * @return un tableau d'entiers représentant le cluster auquel chaque point appartient
      */
     @Override
     public int[] cluster(Point[] points, int ncluster) {
-        // Vérification des paramètres pour éviter les erreurs
-        if (points == null || ncluster < 1 || ncluster > points.length) {
-            return new int[points.length]; // Retourne un tableau vide si les paramètres sont invalides
-        }
 
-        // Limiter le nombre de clusters au nombre de points
-        ncluster = Math.min(ncluster, points.length);
+        // Vérification des paramètres pour éviter les erreurs
+        if (points == null) {
+            throw new IllegalArgumentException("Les points ne peuvent pas être null.");
+        }
+        if (ncluster < 1 || ncluster > points.length) {
+            throw new IllegalArgumentException("Le nombre de clusters doit être compris entre 1 et le nombre de points.");
+        }
 
         // Initialisation des centroïdes avec des points aléatoires
         Point[] centroids = new Point[ncluster];
@@ -79,6 +80,7 @@ public class KMeansClustering implements AlgoClustering {
         return clusters;
     }
 
+
     /**
      * Calcule la distance euclidienne entre deux points.
      *
@@ -89,4 +91,5 @@ public class KMeansClustering implements AlgoClustering {
     private double euclideanDistance(Point p1, Point p2) {
         return Math.sqrt(Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2));
     }
+
 }

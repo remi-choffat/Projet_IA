@@ -22,6 +22,11 @@ public class IdentifierBiome {
      */
     public static BufferedImage identifier(BufferedImage img, Color biome, Palette palette, AlgoClustering algo, int ncluster, Color[] couleurs_clusters) {
 
+        // Vérifie que le nombre de couleurs de clusters correspond au nombre de clusters
+        if (couleurs_clusters.length < ncluster) {
+            throw new IllegalArgumentException("Il n'y a pas assez de couleurs pour représenter les clusters. Veuillez fournir au moins " + ncluster + " couleurs.");
+        }
+
         ArrayList<Point> points = new ArrayList<>();
 
         for (int x = 0; x < img.getWidth(); x++) {
@@ -56,44 +61,4 @@ public class IdentifierBiome {
         return nimg;
     }
 
-
-    public static void main(String[] args) throws Exception {
-        BufferedImage img = ImageIO.read(new File("cartes/Planete 1.jpg"));
-
-        // Définir la liste des biomes à traite (tous les biomes de Palette)
-        Color[] biomes = new Color[]{
-                Palette.TUNDRA,
-                Palette.TAIGA,
-                Palette.FORET_TEMPEREE,
-                Palette.FORET_TROPICALE,
-                Palette.SAVANE,
-                Palette.PRAIRIE,
-                Palette.DESERT,
-                Palette.GLACIER,
-                Palette.EAU_PEU_PROFONDE,
-                Palette.EAU_PROFONDE
-        };
-
-        // Définir les couleurs pour les écosystèmes
-        Color[] ecosystemColors = new Color[]{
-                Color.RED,
-                Color.BLUE,
-                Color.GREEN,
-                Color.YELLOW,
-                Color.MAGENTA,
-                Color.CYAN
-        };
-
-        Palette palette = new Palette(NormeCouleur.CIELAB);
-        AlgoClustering algo = new KMeansClustering();
-
-        // Pour chaque biome, créer une image avec les écosystèmes mis en évidence
-        for (int i = 0; i < biomes.length; i++) {
-            Color biome = biomes[i];
-            BufferedImage nimg = identifier(img, biome, palette, algo, 3, ecosystemColors); // 3 clusters par biome
-            ImageIO.write(nimg, "png", new File("cartes/cartes_modifiees/Planete_1_" + palette.getNomCouleur(biome) + "_ecosystems.png"));
-        }
-
-        System.out.println("Les écosystèmes ont été mis en évidence et sauvegardés !");
-    }
 }
