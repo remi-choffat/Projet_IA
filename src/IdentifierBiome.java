@@ -1,8 +1,8 @@
+import algos.AlgoClustering;
+
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.util.ArrayList;
-import javax.imageio.ImageIO;
 
 /**
  * Permet d'identifier les clusters d'un biome spécifique dans une image et de les colorer en fonction des clusters.
@@ -18,9 +18,9 @@ public class IdentifierBiome {
      * @param algo              l'algorithme de clustering à utiliser
      * @param ncluster          le nombre de clusters à former
      * @param couleurs_clusters les couleurs des clusters à appliquer aux pixels identifiés
-     * @return une nouvelle image où les pixels du biome identifié sont colorés selon les clusters, le reste de l'image étant éclairci
+     * @return une nouvelle image où les pixels du biome identifié sont colorés selon les clusters, le reste de l'image étant éclairci, et le nombre de clusters
      */
-    public static BufferedImage identifier(BufferedImage img, Color biome, Palette palette, AlgoClustering algo, int ncluster, Color[] couleurs_clusters) {
+    public static Object[] identifier(BufferedImage img, Color biome, Palette palette, AlgoClustering algo, int ncluster, Color[] couleurs_clusters) {
 
         // Vérifie que le nombre de couleurs de clusters correspond au nombre de clusters
         if (couleurs_clusters.length < ncluster) {
@@ -39,10 +39,17 @@ public class IdentifierBiome {
 
         // si aucun point n'est trouvé, retourner l'image d'origine
         if (points.isEmpty()) {
-            return img;
+            return new Object[]{img, 0};
         }
 
         int[] clusters = algo.cluster(points.toArray(new Point[0]), ncluster);
+        int nbClusters = 0;
+        for (int cluster : clusters) {
+            if (cluster > nbClusters) {
+                nbClusters = cluster;
+            }
+        }
+        nbClusters++;
 
         BufferedImage nimg = AffichageBiome.eclaircirImage(img, 0.75);
 
@@ -58,7 +65,7 @@ public class IdentifierBiome {
         g2d.drawString(palette.getNomCouleur(biome), 20, 40);
         g2d.dispose();
 
-        return nimg;
+        return new Object[]{nimg, nbClusters};
     }
 
 }

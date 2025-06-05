@@ -59,6 +59,23 @@ public class Palette {
     }
 
 
+    public Color getCouleur(String nomBiome) {
+        return switch (nomBiome.toLowerCase()) {
+            case "tundra" -> TUNDRA;
+            case "taiga" -> TAIGA;
+            case "forêt tempérée" -> FORET_TEMPEREE;
+            case "forêt tropicale" -> FORET_TROPICALE;
+            case "savane" -> SAVANE;
+            case "prairie" -> PRAIRIE;
+            case "désert" -> DESERT;
+            case "glacier" -> GLACIER;
+            case "eau peu profonde" -> EAU_PEU_PROFONDE;
+            case "eau profonde" -> EAU_PROFONDE;
+            default -> throw new IllegalArgumentException("Nom de biome inconnu : " + nomBiome);
+        };
+    }
+
+
     /**
      * Récupère la couleur la plus proche d'une couleur donnée dans le tableau des couleurs prédéfinies
      *

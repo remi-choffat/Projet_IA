@@ -22,30 +22,30 @@ public class Main {
     public static void main(String[] args) {
 
         try {
-            if (args.length < 4) {
-                System.err.println("Usage: java Main <image_path> <output_directory> <number_of_clusters> <algorithm> [<eps> <minPts>]");
-                // Exemple java Main "cartes/Planete 1.jpg" "cartes/cartes_modifiees" 4 KMeans
+            if (args.length < 3) {
+                System.err.println("Usage: java Main <image_path> <output_directory> <algorithm> [<number_of_clusters>] [<eps> <minPts>] [<nom_biome>]");
+                // Exemple java Main "cartes/Planete 1.jpg" "cartes/cartes_modifiees" KMeans 4 FORET_TEMPEREE
+                // Exemple java Main "cartes/Planete 1.jpg" "cartes/cartes_modifiees" DBScan 5.0 4
                 return;
             }
 
             final String imagePath = args[0];
             final String outputDirectory = args[1];
-            final int numberOfClusters = Integer.parseInt(args[2]);
 
             // Création de l'algorithme de clustering
             AlgoClustering algo;
-            switch (args[3].toLowerCase()) {
+            switch (args[2].toLowerCase()) {
                 case "kmeans":
                     algo = new KMeansClustering();
                     break;
                 case "dbscan":
                     double eps = 5.0; // Valeur par défaut pour eps
                     int minPts = 4; // Valeur par défaut pour minPts
-                    if (args.length >= 5) {
-                        eps = Double.parseDouble(args[4]);
+                    if (args.length >= 4) {
+                        eps = Double.parseDouble(args[3]);
                     }
-                    if (args.length >= 6) {
-                        minPts = Integer.parseInt(args[5]);
+                    if (args.length >= 5) {
+                        minPts = Integer.parseInt(args[4]);
                     }
                     algo = new DBScanClustering(eps, minPts);
                     break;
@@ -59,6 +59,25 @@ public class Main {
                     System.err.println("Algorithme inconnu : " + args[3]);
                     System.err.println("Utilisez 'KMeans', 'DBScan', 'HCA_Single' ou 'HCA_Centroid'.");
                     return;
+            }
+
+            int numberOfClusters = 4; // Valeur par défaut pour le nombre de clusters
+            String nomBiome = null;
+            if (!(algo instanceof DBScanClustering)) {
+                if (args.length >= 4) {
+                    try {
+                        numberOfClusters = Integer.parseInt(args[3]);
+                    } catch (NumberFormatException e) {
+                        nomBiome = args[3]; // Si ce n'est pas un nombre, c'est peut-être le nom du biome
+                    }
+                }
+                if (args.length >= 5) {
+                    nomBiome = args[4];
+                }
+            } else {
+                if (args.length >= 6) {
+                    nomBiome = args[5];
+                }
             }
 
             File imageFile = new File(imagePath);
@@ -80,47 +99,48 @@ public class Main {
 
             System.out.println("Traitement de l'image " + imageName);
 
-            // création de l'instance de FlouParMoyenne
-            Blur blur = new FlouParMoyenne();
-
-            // application du filtre de flou avec un rayon de 1 pixel
-            BufferedImage blurredImage = blur.blur(image, 1);
+            // Application du flou
+            Blur blur = new GaussianBlur();
+            BufferedImage blurredImage = blur.blur(image, GaussianBlur.LARGE);
 
             Palette palette = new Palette(NormeCouleur.REDMEANS);
 
             // Définir les biomes (tous les biomes de Palette)
-            Color[] biomes = palette.getCouleurs();
+            Color[] biomes;
+            if (nomBiome != null) {
+                biomes = new Color[]{palette.getCouleur(nomBiome)};
+            } else {
+                biomes = palette.getCouleurs();
+            }
 
             // Mise en évidence des biomes
             for (int i = 0; i < biomes.length; i++) {
                 Color biome = biomes[i];
-                int percent = (int) ((i + 1) * 100.0 / biomes.length);
+                int percent = (int) (i * 100.0 / biomes.length);
                 System.out.print("\rIdentification des différents biomes (" + percent + " %)...");
                 BufferedImage imageBiome = AffichageBiome.afficherBiome(blurredImage, palette, biome);
                 ImageIO.write(imageBiome, extension, new File(outputDir, imageName + "_" + palette.getNomCouleur(biome) + "." + extension));
             }
-            System.out.println();
+            System.out.print("\rIdentification des différents biomes (100 %)...\n");
 
-            // Couleurs pour mettre en évidence les différents clusters
-            Color[] ecosystemColors = new Color[]{
-                    Color.RED,
-                    Color.BLUE,
-                    Color.GREEN,
-                    Color.YELLOW,
-                    Color.MAGENTA,
-                    Color.CYAN,
-                    Color.ORANGE
-            };
+            // Couleurs pour mettre en évidence les différents clusters : liste aléatoire de taille 100
+            Color[] ecosystemColors = new Color[100];
+            for (int i = 0; i < ecosystemColors.length; i++) {
+                ecosystemColors[i] = new Color((int) (Math.random() * 0x1000000));
+            }
 
             for (int i = 0; i < biomes.length; i++) {
                 Color biome = biomes[i];
-                int percent = (int) ((i + 1) * 100.0 / biomes.length);
+                int percent = (int) (i * 100.0 / biomes.length);
                 System.out.print("\rGénération des images d'écosystèmes (" + percent + " %)...");
-                BufferedImage nimg = IdentifierBiome.identifier(blurredImage, biome, palette, algo, numberOfClusters, ecosystemColors);
+                Object[] result = IdentifierBiome.identifier(blurredImage, biome, palette, algo, numberOfClusters, ecosystemColors);
+                BufferedImage nimg = (BufferedImage) result[0];
+                int nbClusters = (int) result[1];
+                ImageIO.write(nimg, extension, new File(outputDir, imageName + "_" + palette.getNomCouleur(biome) + "_ecosystemes_" + nbClusters + "_" + args[2] + "." + extension));
             }
-            ImageIO.write(nimg, extension, new File(outputDir, imageName + "_" + palette.getNomCouleur(biome) + "_ecosystemes_" + numberOfClusters + "_" + args[3] + "." + extension));
+            System.out.print("\rGénération des images d'écosystèmes (100 %)...\n");
 
-            System.out.println("\nTraitement terminé avec succès ! Vos images sont enregistrées dans le répertoire : " + outputDir.getAbsolutePath());
+            System.out.println("Traitement terminé avec succès ! Vos images sont enregistrées dans le répertoire : " + outputDir.getAbsolutePath());
 
         } catch (IOException e) {
             System.err.println("Erreur lors du traitement de l'image : " + e.getMessage());
