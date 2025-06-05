@@ -33,9 +33,15 @@ public class Main {
                 case "kmeans":
                     algo = new KMeansClustering();
                     break;
+                case "hca_single":
+                    algo = new HCAClustering(HCAClustering.SINGLE_LINKAGE);
+                    break;
+                case "hca_centroid":
+                    algo = new HCAClustering(HCAClustering.CENTROID_LINKAGE);
+                    break;
                 default:
                     System.err.println("Algorithme inconnu : " + args[3]);
-                    System.err.println("Utilisez 'KMeans'.");
+                    System.err.println("Utilisez 'KMeans', 'HCA_Single' ou 'HCA_Centroid'.");
                     return;
             }
 
