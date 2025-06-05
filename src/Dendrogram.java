@@ -1,6 +1,9 @@
 import java.awt.Point;
 import java.util.ArrayList;
 
+/**
+ * Représente un cluster en forme de dendrogram
+ */
 public class Dendrogram {
 
     private final ArrayList<Point> points;
@@ -18,6 +21,9 @@ public class Dendrogram {
         points.addAll(c.getPoints());
     }
 
+	/**
+	 * @return retourne la distance entre 2 clusters en fonction du linkage choisi
+	 */
     public int compare(Dendrogram d, int linkage) {
         int res = -1;
         switch (linkage) {
