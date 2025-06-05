@@ -29,7 +29,6 @@ public class HCAClustering implements AlgoClustering {
 
 		// On fusionne les clusters en les comparant jusqu'à ce qu'il n'en reste plus que le nombre désiré
         while (liste_d.size() > ncluster) {
-            System.out.println("Il reste " + liste_d.size() + " clusters");
             int min_dist = -1;
             int[] min_index = new int[2];
             int dist;

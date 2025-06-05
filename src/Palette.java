@@ -63,14 +63,14 @@ public class Palette {
         return switch (nomBiome.toLowerCase()) {
             case "tundra" -> TUNDRA;
             case "taiga" -> TAIGA;
-            case "forêt tempérée" -> FORET_TEMPEREE;
-            case "forêt tropicale" -> FORET_TROPICALE;
+            case "forêt_tempérée" -> FORET_TEMPEREE;
+            case "forêt_tropicale" -> FORET_TROPICALE;
             case "savane" -> SAVANE;
             case "prairie" -> PRAIRIE;
             case "désert" -> DESERT;
             case "glacier" -> GLACIER;
-            case "eau peu profonde" -> EAU_PEU_PROFONDE;
-            case "eau profonde" -> EAU_PROFONDE;
+            case "eau_peu_profonde" -> EAU_PEU_PROFONDE;
+            case "eau_profonde" -> EAU_PROFONDE;
             default -> throw new IllegalArgumentException("Nom de biome inconnu : " + nomBiome);
         };
     }

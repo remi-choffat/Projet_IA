@@ -74,7 +74,7 @@ public class AffichageBiome {
         // Ajoute le titre (nom du biome)
         Graphics2D g2d = result.createGraphics();
         g2d.setColor(Color.BLACK);
-        g2d.setFont(new Font("Arial", Font.BOLD, 32));
+        g2d.setFont(new Font("Arial", Font.BOLD, imageOriginale.getHeight() / 30));
         g2d.drawString(palette.getNomCouleur(biomeCible), 20, 40);
         g2d.dispose();
 

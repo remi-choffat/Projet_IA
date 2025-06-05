@@ -61,7 +61,7 @@ public class IdentifierBiome {
         // ajouter le nom du biome sur l'image
         Graphics2D g2d = nimg.createGraphics();
         g2d.setColor(Color.BLACK);
-        g2d.setFont(new Font("Arial", Font.BOLD, 32));
+        g2d.setFont(new Font("Arial", Font.BOLD, img.getHeight() / 30));
         g2d.drawString(palette.getNomCouleur(biome), 20, 40);
         g2d.dispose();
 

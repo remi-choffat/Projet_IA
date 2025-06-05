@@ -23,8 +23,8 @@ public class Main {
 
         try {
             if (args.length < 3) {
-                System.err.println("Usage: java Main <image_path> <output_directory> <algorithm> [<number_of_clusters>] [<eps> <minPts>] [<nom_biome>]");
-                // Exemple java Main "cartes/Planete 1.jpg" "cartes/cartes_modifiees" KMeans 4 FORET_TEMPEREE
+                System.err.println("Usage: java Main <image_path> <output_directory> <algorithm> [<number_of_clusters>] [<eps> <minPts>] [<nom_biome>] [<taille_image_px>]");
+                // Exemple java Main "cartes/Planete 1.jpg" "cartes/cartes_modifiees" KMeans 4 FORET_TEMPEREE 100
                 // Exemple java Main "cartes/Planete 1.jpg" "cartes/cartes_modifiees" DBScan 5.0 4
                 return;
             }
@@ -61,25 +61,6 @@ public class Main {
                     return;
             }
 
-            int numberOfClusters = 4; // Valeur par défaut pour le nombre de clusters
-            String nomBiome = null;
-            if (!(algo instanceof DBScanClustering)) {
-                if (args.length >= 4) {
-                    try {
-                        numberOfClusters = Integer.parseInt(args[3]);
-                    } catch (NumberFormatException e) {
-                        nomBiome = args[3]; // Si ce n'est pas un nombre, c'est peut-être le nom du biome
-                    }
-                }
-                if (args.length >= 5) {
-                    nomBiome = args[4];
-                }
-            } else {
-                if (args.length >= 6) {
-                    nomBiome = args[5];
-                }
-            }
-
             File imageFile = new File(imagePath);
             String imageName = imageFile.getName();
             final String extension = imageName.substring(imageName.lastIndexOf('.') + 1).toLowerCase();
@@ -99,13 +80,59 @@ public class Main {
 
             System.out.println("Traitement de l'image " + imageName);
 
+            int numberOfClusters = 4; // Valeur par défaut pour le nombre de clusters
+            int tailleImagePx;
+            String nomBiome = null;
+            if (!(algo instanceof DBScanClustering)) {
+                if (args.length >= 4) {
+                    try {
+                        numberOfClusters = Integer.parseInt(args[3]);
+                    } catch (NumberFormatException e) {
+                        nomBiome = args[3]; // Si ce n'est pas un nombre, c'est le nom du biome
+                    }
+                }
+                if (args.length >= 5) {
+                    nomBiome = args[4];
+                }
+                if (args.length >= 6) {
+                    try {
+                        tailleImagePx = Integer.parseInt(args[5]);
+                        if (tailleImagePx <= 0) {
+                            System.err.println("La taille de l'image doit être un nombre positif.");
+                            return;
+                        }
+                        image = Utils.redimensionner(image, tailleImagePx);
+                    } catch (NumberFormatException e) {
+                        System.err.println("La taille de l'image doit être un nombre entier positif.");
+                        return;
+                    }
+                }
+            } else {
+                if (args.length >= 6) {
+                    nomBiome = args[5];
+                }
+                if (args.length >= 7) {
+                    try {
+                        tailleImagePx = Integer.parseInt(args[6]);
+                        if (tailleImagePx <= 0) {
+                            System.err.println("La taille de l'image doit être un nombre positif.");
+                            return;
+                        }
+                        image = Utils.redimensionner(image, tailleImagePx);
+                    } catch (NumberFormatException e) {
+                        System.err.println("La taille de l'image doit être un nombre entier positif.");
+                        return;
+                    }
+                }
+            }
+
             // Application du flou
             Blur blur = new GaussianBlur();
-            BufferedImage blurredImage = blur.blur(image, GaussianBlur.LARGE);
+            BufferedImage blurredImage = blur.blur(image, GaussianBlur.SIMPLE);
 
             Palette palette = new Palette(NormeCouleur.REDMEANS);
 
-            // Définir les biomes (tous les biomes de Palette)
+            // Définit les biomes à traiter
             Color[] biomes;
             if (nomBiome != null) {
                 biomes = new Color[]{palette.getCouleur(nomBiome)};
@@ -129,6 +156,7 @@ public class Main {
                 ecosystemColors[i] = new Color((int) (Math.random() * 0x1000000));
             }
 
+            // Génération des images d'écosystèmes
             for (int i = 0; i < biomes.length; i++) {
                 Color biome = biomes[i];
                 int percent = (int) (i * 100.0 / biomes.length);
@@ -136,11 +164,11 @@ public class Main {
                 Object[] result = IdentifierBiome.identifier(blurredImage, biome, palette, algo, numberOfClusters, ecosystemColors);
                 BufferedImage nimg = (BufferedImage) result[0];
                 int nbClusters = (int) result[1];
-                ImageIO.write(nimg, extension, new File(outputDir, imageName + "_" + palette.getNomCouleur(biome) + "_ecosystemes_" + nbClusters + "_" + args[2] + "." + extension));
+                ImageIO.write(nimg, extension, new File(outputDir, (imageName + "_" + palette.getNomCouleur(biome) + "_" + nbClusters + "-clusters_" + args[2] + "." + extension).replace(" ", "_")));
             }
             System.out.print("\rGénération des images d'écosystèmes (100 %)...\n");
 
-            System.out.println("Traitement terminé avec succès ! Vos images sont enregistrées dans le répertoire : " + outputDir.getAbsolutePath());
+            System.out.println("Traitement terminé avec succès ! \nVos images sont enregistrées dans le répertoire : " + outputDir.getAbsolutePath());
 
         } catch (IOException e) {
             System.err.println("Erreur lors du traitement de l'image : " + e.getMessage());

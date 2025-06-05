@@ -1,4 +1,5 @@
-import java.awt.Color;
+import java.awt.*;
+import java.awt.image.BufferedImage;
 
 /**
  * Utils
@@ -76,4 +77,25 @@ public class Utils {
         lab[2] = (int) (bs + .5);
         return lab;
     }
+
+
+    /**
+     * Redimensionne une image à une taille maximale spécifiée tout en conservant le ratio d'aspect.
+     *
+     * @param image         l'image à redimensionner
+     * @param tailleImagePx la taille maximale en pixels pour la largeur de l'image
+     * @return l'image redimensionnée
+     */
+    public static BufferedImage redimensionner(BufferedImage image, int tailleImagePx) {
+        if (image.getWidth() <= tailleImagePx && image.getHeight() <= tailleImagePx) {
+            return image; // Pas besoin de redimensionner
+        }
+        int newHeight = (int) ((double) tailleImagePx * image.getHeight() / image.getWidth());
+        BufferedImage resizedImage = new BufferedImage(tailleImagePx, newHeight, image.getType());
+        Graphics2D g = resizedImage.createGraphics();
+        g.drawImage(image, 0, 0, tailleImagePx, newHeight, null);
+        g.dispose();
+        return resizedImage;
+    }
+
 }
