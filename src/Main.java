@@ -146,7 +146,7 @@ public class Main {
                 int percent = (int) (i * 100.0 / biomes.length);
                 System.out.print("\rIdentification des différents biomes (" + percent + " %)...");
                 BufferedImage imageBiome = AffichageBiome.afficherBiome(blurredImage, palette, biome);
-                ImageIO.write(imageBiome, extension, new File(outputDir, imageName + "_" + palette.getNomCouleur(biome) + "." + extension));
+                ImageIO.write(imageBiome, extension, new File(outputDir, (imageName + "_" + palette.getNomCouleur(biome) + "." + extension).replace(" ", "_")));
             }
             System.out.print("\rIdentification des différents biomes (100 %)...\n");
 
